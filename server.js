@@ -33,5 +33,12 @@ app.post('/login', (req, res) => {
   });
 });
 
+app.get("/users", (req, res) => {
+  db.all("SELECT * FROM users", [], (err, rows) => {
+    if (err) return res.status(500).send("DB error");
+    res.json(rows);
+  });
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
