@@ -9,10 +9,20 @@ app.use(express.json());
 
 app.post('/signup', (req, res) => {
   const { name, email, password } = req.body;
-  db.run(`INSERT INTO users (name, email, password) VALUES (?, ?, ?)`, [name, email, password], err => {
-    if (err) return res.status(400).send("User already exists or DB error");
+  db.run(
+  `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`,
+  [name, email, password],
+  function (err) {
+    if (err) {
+      if (err.message.includes("UNIQUE constraint failed")) {
+        return res.status(409).send("Email already exists");
+      }
+      console.error("DB Error:", err);
+      return res.status(500).send("Database error");
+    }
     res.send("Signup successful");
   });
+
 });
 
 app.post('/login', (req, res) => {
